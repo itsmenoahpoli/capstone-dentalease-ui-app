@@ -1,2 +1,14 @@
 @import "tailwindcss";
 @import "@radix-ui/themes/styles.css";
+
+.rt-TextFieldRoot {
+  @apply !h-[42px];
+}
+
+::placeholder {
+  @apply !text-sm;
+}
+
+button {
+  @apply !h-[40px] !cursor-pointer;
+}
