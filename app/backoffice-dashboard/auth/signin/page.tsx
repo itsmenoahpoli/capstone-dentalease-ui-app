@@ -1,4 +1,4 @@
-import { Flex, Card } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import SignInForm from "@/components/modules/auth/SignInForm";
 
 export const metadata = {

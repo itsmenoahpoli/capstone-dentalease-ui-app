@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { TextField, Flex, Button } from "@radix-ui/themes";
+import ErrorLabel from "../../shared/ErrorLabel";
 
 type FormData = {
   email: string;
@@ -15,7 +16,9 @@ export default function SignInForm() {
     formState: { errors },
   } = useForm<FormData>();
 
-  const onSubmit = (data: FormData) => {};
+  const onSubmit = (data: FormData) => {
+    console.log(data);
+  };
 
   return (
     <form
@@ -28,9 +31,13 @@ export default function SignInForm() {
           placeholder="Email"
           {...register("email", { required: "Email is required" })}
         />
-        {errors.email && typeof errors.email.message === "string" && (
-          <span className="text-red-500 text-xs">{errors.email.message}</span>
-        )}
+        <ErrorLabel
+          message={
+            typeof errors.email?.message === "string"
+              ? errors.email.message
+              : undefined
+          }
+        />
       </Flex>
 
       <Flex direction="column">
@@ -39,11 +46,13 @@ export default function SignInForm() {
           placeholder="Password"
           {...register("password", { required: "Password is required" })}
         />
-        {errors.password && typeof errors.password.message === "string" && (
-          <span className="text-red-500 text-xs">
-            {errors.password.message}
-          </span>
-        )}
+        <ErrorLabel
+          message={
+            typeof errors.password?.message === "string"
+              ? errors.password.message
+              : undefined
+          }
+        />
       </Flex>
 
       <div className="flex justify-end">
@@ -53,7 +62,7 @@ export default function SignInForm() {
       </div>
 
       <Button type="submit" color="blue">
-        Sign In
+        SIGN IN
       </Button>
     </form>
   );
