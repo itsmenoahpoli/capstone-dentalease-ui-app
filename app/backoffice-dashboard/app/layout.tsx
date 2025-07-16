@@ -19,7 +19,7 @@ import {
   TruckElectric,
 } from "lucide-react";
 import { Flex, Avatar } from "@radix-ui/themes";
-import { AppBreadcrumbs, AppClock } from "@/components";
+import { AppBreadcrumbs, AppClock, UserSidebarProfile } from "@/components";
 import { useEffect } from "react";
 
 const menu = [
@@ -172,6 +172,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               ))}
             </PerfectScrollbar>
+          </div>
+
+          <div className="px-3">
+            <UserSidebarProfile
+              name="Patrick"
+              email="patrick.policarpio@domain.com"
+            />
           </div>
         </div>
       </div>
