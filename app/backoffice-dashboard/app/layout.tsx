@@ -1,16 +1,5 @@
-"use client";
-
-import { Button } from "@radix-ui/themes";
 import Link from "next/link";
-import { useState } from "react";
-import {
-  LayoutDashboard,
-  Users,
-  Settings,
-  LogOut,
-  ChevronRight,
-  ChevronLeft,
-} from "lucide-react";
+import { LayoutDashboard, Users, Settings } from "lucide-react";
 
 const menu = [
   {
