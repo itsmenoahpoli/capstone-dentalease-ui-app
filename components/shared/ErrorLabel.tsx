@@ -4,7 +4,7 @@ type ErrorLabelProps = {
   message?: string;
 };
 
-export default function ErrorLabel({ message }: ErrorLabelProps) {
+export const ErrorLabel: React.FC<ErrorLabelProps> = ({ message }) => {
   if (!message) return null;
   return <p className="text-red-300">{message}</p>;
-}
+};

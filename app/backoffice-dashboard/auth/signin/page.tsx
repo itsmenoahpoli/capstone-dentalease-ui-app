@@ -1,8 +1,8 @@
 import { Flex } from "@radix-ui/themes";
-import SignInForm from "@/components/modules/auth/SignInForm";
+import { SignInForm } from "@/components";
 
 export const metadata = {
-  title: "DentalEase - Sign In",
+  title: "DentalEase | Sign In",
   description: "Sign in to your DentalEase backoffice account",
 };
 

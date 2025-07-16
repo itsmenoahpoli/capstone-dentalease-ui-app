@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🦷 DentalEase Patient/Doctor Management System
 
-## Getting Started
+DentalEase is a modern web application designed to streamline patient and doctor management for dental clinics. Built with Next.js and React, it provides an intuitive interface for both patients and healthcare professionals.
 
-First, run the development server:
+## ✨ Features
 
-```bash
+- 👩‍⚕️ Patient and doctor management
+- 📅 Appointment scheduling
+- 💳 Billing and payments
+- 💊 Inventory and prescription management
+- 🏥 Clinic information and announcements
+- 🤖 AI chat support
+
+## ⚙️ Setup & Installation
+
+### 📋 Prerequisites
+
+- 🟢 Node.js (v18 or higher recommended)
+- 📦 npm (v9 or higher) or yarn
+
+### 🛠️ Installation Steps
+
+1. 📥 Clone the repository:
+
+   git clone https://github.com/itsmenoahpoli/capstone-dentalease-ui-app.git
+   cd capstone-dentalease-ui-app
+
+2. 📦 Install dependencies:
+
+   npm install
+
+   # or
+
+   yarn install
+
+3. ⚙️ Copy and configure environment variables if needed (see `.env.example` if available).
+
+### 🚀 Running the App Locally
+
+To start the development server:
+
 npm run dev
+
 # or
+
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app will be available at [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+To build for production:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+npm run build
 
-## Learn More
+To start the production server:
 
-To learn more about Next.js, take a look at the following resources:
+npm run start
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ☁️ Deployment Guide (Vercel)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The easiest way to deploy DentalEase is via [Vercel](https://vercel.com/):
 
-## Deploy on Vercel
+1. 🗂️ Push your code to a GitHub, GitLab, or Bitbucket repository.
+2. 🌐 Go to [Vercel](https://vercel.com/) and sign up/log in.
+3. ➕ Click "New Project" and import your repository.
+4. 🛠️ Vercel will auto-detect the Next.js app. Use the default build settings.
+5. 🚀 Click "Deploy". Your app will be live in seconds.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+For custom domains and environment variables, use the Vercel dashboard settings.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🌳 Branching Strategy
+
+- `main` 🟢: Stable, production-ready code. All releases are merged here.
+- `develop` 🛠️: Active development branch. All features and fixes branch off from here.
+- `feature/xyz` ✨: For new features. Branch off from `develop`.
+- `fix/xyz` 🐞: For bug fixes. Branch off from `develop`.
+- `release/xyz` 🚢: For preparing a new production release. Merge feature/fix branches here, then into `main`.
+- `hotfix/xyz` 🔥: For urgent fixes on production. Branch off from `main`, then merge back to both `main` and `develop`.
+
+## 🤝 Contributing
+
+1. 🍴 Fork the repository and create your feature/fix branch.
+2. 💾 Commit your changes with clear messages.
+3. 📤 Push to your fork and open a pull request against the appropriate branch.
+
+## 📄 License
+
+Specify your license here (e.g., MIT, Apache 2.0, etc.)

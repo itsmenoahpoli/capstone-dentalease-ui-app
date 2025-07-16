@@ -1,15 +1,16 @@
 "use client";
 
+import React from "react";
 import { useForm } from "react-hook-form";
 import { TextField, Flex, Button } from "@radix-ui/themes";
-import ErrorLabel from "../../shared/ErrorLabel";
+import { ErrorLabel } from "../../shared/ErrorLabel";
 
 type FormData = {
   email: string;
   password: string;
 };
 
-export default function SignInForm() {
+export const SignInForm: React.FC = () => {
   const {
     register,
     handleSubmit,
@@ -66,4 +67,4 @@ export default function SignInForm() {
       </Button>
     </form>
   );
-}
+};

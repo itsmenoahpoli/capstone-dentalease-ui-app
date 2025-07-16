@@ -1,11 +1,26 @@
 "use client";
 import "react-perfect-scrollbar/dist/css/styles.css";
+import "nprogress/nprogress.css";
 import PerfectScrollbar from "react-perfect-scrollbar";
+import NProgress from "nprogress";
 import Link from "next/link";
 import Image from "next/image";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard } from "lucide-react";
+import {
+  Braces,
+  CalendarArrowDown,
+  DollarSign,
+  FileText,
+  LayoutDashboard,
+  ListChecks,
+  ListFilterPlus,
+  MessageCircleCode,
+  TruckElectric,
+} from "lucide-react";
 import { Flex, Avatar } from "@radix-ui/themes";
+import { AppBreadcrumbs, AppClock } from "@/components";
+import { useEffect } from "react";
 
 const menu = [
   {
@@ -24,32 +39,32 @@ const menu = [
     items: [
       {
         label: "Services",
-        icon: <LayoutDashboard size={18} />,
-        href: "/backoffice-dashboard/app/zz",
+        icon: <ListChecks size={18} />,
+        href: "/backoffice-dashboard/app/services",
       },
       {
         label: "Appointments",
-        icon: <LayoutDashboard size={18} />,
+        icon: <CalendarArrowDown size={18} />,
         href: "/backoffice-dashboard/app/zz",
       },
       {
         label: "Patient Records",
-        icon: <LayoutDashboard size={18} />,
+        icon: <ListFilterPlus size={18} />,
         href: "/backoffice-dashboard/app/zz",
       },
       {
         label: "Billings & Payments",
-        icon: <LayoutDashboard size={18} />,
+        icon: <DollarSign size={18} />,
         href: "/backoffice-dashboard/app/zz",
       },
       {
         label: "Inventory",
-        icon: <LayoutDashboard size={18} />,
+        icon: <TruckElectric size={18} />,
         href: "/backoffice-dashboard/app/zz",
       },
       {
         label: "Prescriptions",
-        icon: <LayoutDashboard size={18} />,
+        icon: <FileText size={18} />,
         href: "/backoffice-dashboard/app/zz",
       },
     ],
@@ -59,27 +74,27 @@ const menu = [
     items: [
       {
         label: "Clinic Information",
-        icon: <LayoutDashboard size={18} />,
+        icon: <Braces size={18} />,
         href: "/backoffice-dashboard/app/zz",
       },
       {
         label: "Clinic Announcements",
-        icon: <LayoutDashboard size={18} />,
+        icon: <Braces size={18} />,
         href: "/backoffice-dashboard/app/zz",
       },
       {
         label: "Latest Developments",
-        icon: <LayoutDashboard size={18} />,
+        icon: <Braces size={18} />,
         href: "/backoffice-dashboard/app/zz",
       },
       {
         label: "Owner Information",
-        icon: <LayoutDashboard size={18} />,
+        icon: <Braces size={18} />,
         href: "/backoffice-dashboard/app/zz",
       },
       {
         label: "Our Team",
-        icon: <LayoutDashboard size={18} />,
+        icon: <Braces size={18} />,
         href: "/backoffice-dashboard/app/zz",
       },
     ],
@@ -88,13 +103,13 @@ const menu = [
     section: "HELP & SUPPORT",
     items: [
       {
-        label: "CONTACT US ENTRIES",
-        icon: <LayoutDashboard size={18} />,
+        label: "Contact Us Entries",
+        icon: <MessageCircleCode size={18} />,
         href: "/backoffice-dashboard/app/zz",
       },
       {
-        label: "CHAT SUPPORT AI",
-        icon: <LayoutDashboard size={18} />,
+        label: "AI Chat Support",
+        icon: <MessageCircleCode size={18} />,
         href: "/backoffice-dashboard/app/zz",
       },
     ],
@@ -103,6 +118,14 @@ const menu = [
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+
+  useEffect(() => {
+    NProgress.start();
+    const timeout = setTimeout(() => {
+      NProgress.done();
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [pathname]);
 
   const isActive = (href: string) => {
     return href === pathname;
@@ -156,13 +179,44 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="bg-white flex justify-between items-center border-b border-gray-200 py-3 px-5 mb-6 fixed top-0 z-50 w-[calc(100%-16rem)]">
           <Flex></Flex>
           <Flex>
-            <Avatar
-              className="bg-amber-500 rounded-full"
-              fallback={<span className="text-white font-medium">RC</span>}
-            />
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button
+                  type="button"
+                  className="focus:outline-none hover:outline-none"
+                >
+                  <Avatar
+                    className="bg-amber-500 rounded-full cursor-pointer"
+                    fallback={
+                      <span className="text-white font-medium">RC</span>
+                    }
+                  />
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className="min-w-[180px] bg-white rounded shadow-lg p-1 border border-gray-200 z-50">
+                  <DropdownMenu.Item className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer focus:outline-none hover:outline-none">
+                    My Account
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer focus:outline-none hover:outline-none">
+                    Update Password
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item className="px-4 py-2 text-sm text-red-500 hover:bg-red-100 cursor-pointer focus:outline-none hover:outline-none">
+                    Sign Out
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
           </Flex>
         </div>
-        <div className="pt-[4.5rem] px-5">{children}</div>
+        <div className="pt-[5rem] px-5">
+          <Flex justify="between" className="mb-4">
+            <AppBreadcrumbs />
+            <AppClock />
+          </Flex>
+
+          {children}
+        </div>
       </main>
     </div>
   );
