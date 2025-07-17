@@ -30,19 +30,24 @@ const appointments = [
 export const DashboardNearAppointments: React.FC = () => {
   return (
     <Card className="p-0 bg-white rounded-lg w-full">
+      <div className="!p-2 border-b border-gray-200">
+        <h1 className="font-bold text-lg text-gray-600">
+          Upcoming Appointments
+        </h1>
+      </div>
       <Table.Root className="min-w-[700px] w-full">
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeaderCell className="px-4 py-3 text-left text-sm text-gray-600">
+            <Table.ColumnHeaderCell className="px-4 py-3 text-left !text-xs text-gray-500">
               Patient Name
             </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className="px-4 py-3 text-left text-sm text-gray-600">
+            <Table.ColumnHeaderCell className="px-4 py-3 text-left !text-xs text-gray-500">
               Email & Contact
             </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className="px-4 py-3 text-left text-sm text-gray-600">
+            <Table.ColumnHeaderCell className="px-4 py-3 text-left !text-xs text-gray-500">
               Appointment Date
             </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className="px-4 py-3 text-left text-sm text-gray-600">
+            <Table.ColumnHeaderCell className="px-4 py-3 text-left !text-xs text-gray-500">
               Status
             </Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell className="px-4 py-3 text-center"></Table.ColumnHeaderCell>
