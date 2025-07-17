@@ -5,6 +5,14 @@
   @apply !h-[42px] !bg-white;
 }
 
+.rt-TableColumnHeaderCell {
+  @apply !font-medium !text-gray-700;
+}
+
+.rt-TableCell {
+  @apply !align-middle !text-gray-500;
+}
+
 input {
   @apply !px-2;
 }

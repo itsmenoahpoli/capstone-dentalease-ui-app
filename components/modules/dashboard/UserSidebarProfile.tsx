@@ -18,7 +18,7 @@ export const UserSidebarProfile: React.FC<{ name: string; email: string }> = ({
     <Flex
       justify="center"
       gap="3"
-      className="w-full  bg-[#232b3e] rounded-full px-3 py-2 mb-4 shadow-lg"
+      className="bg-[#232b3e] rounded-full px-3 py-2 mb-4 shadow-lg"
     >
       <Avatar
         src="https://randomuser.me/api/portraits/men/32.jpg"

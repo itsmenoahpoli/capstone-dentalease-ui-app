@@ -13,7 +13,13 @@ export { UserSidebarProfile } from "./modules/dashboard/UserSidebarProfile";
 export { DashboardNearAppointments } from "./modules/dashboard/DashboardNearAppointments";
 
 /**
+ * Services components
+ */
+export { ServicesManageList } from "./modules/services/ServicesManageList";
+
+/**
  * Shared components
  */
 export { ErrorLabel } from "./shared/ErrorLabel";
 export { PageHeader } from "./shared/dashboard/PageHeader";
+export { TablePagination } from "./shared/table/TablePagination";
