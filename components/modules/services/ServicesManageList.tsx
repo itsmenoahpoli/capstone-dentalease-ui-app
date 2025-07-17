@@ -246,10 +246,10 @@ export const ServicesManageList: React.FC<ServicesManageListProps> = ({
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content>
                         <DropdownMenu.Item>
-                          <Eye style={{ marginRight: 8 }} /> Edit
+                          <Eye size={15} style={{ marginRight: 8 }} /> Edit
                         </DropdownMenu.Item>
                         <DropdownMenu.Item color="red">
-                          <Trash style={{ marginRight: 8 }} /> Delete
+                          <Trash size={15} style={{ marginRight: 8 }} /> Delete
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
                     </DropdownMenu.Root>

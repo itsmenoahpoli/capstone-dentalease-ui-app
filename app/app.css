@@ -13,6 +13,10 @@
   @apply !align-middle !text-gray-500;
 }
 
+.rt-DialogContent .rt-Heading {
+  @apply !text-gray-700 !font-medium;
+}
+
 input {
   @apply !px-2;
 }
