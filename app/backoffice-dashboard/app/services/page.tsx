@@ -2,7 +2,7 @@ import { Flex, Button } from "@radix-ui/themes";
 import { PageHeader, ServicesManageList } from "@/components";
 
 export const metadata = {
-  title: "DentalEase | Services",
+  title: "Services | DentalEase",
   description: "Manage facility offered services",
 };
 

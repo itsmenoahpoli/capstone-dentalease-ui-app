@@ -6,7 +6,7 @@ import {
 } from "@/components";
 
 export const metadata = {
-  title: "DentalEase | Dashboard Overview",
+  title: "Dashboard Overview | DentalEase",
   description: "Overview of the DentalEase backoffice dashboard",
 };
 

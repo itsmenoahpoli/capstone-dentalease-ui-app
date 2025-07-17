@@ -2,11 +2,11 @@
 
 import { Flex, Button, Text, IconButton, DropdownMenu } from "@radix-ui/themes";
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronUpIcon,
-  ChevronDownIcon,
-} from "@radix-ui/react-icons";
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 import React, { useState } from "react";
 
 interface TablePaginationProps {
@@ -44,7 +44,11 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
           <DropdownMenu.Trigger>
             <Button variant="outline" size="1" style={{ minWidth: "100px" }}>
               <Text>{pageSize} / page</Text>
-              {dropdownOpen ? <ChevronDownIcon /> : <ChevronUpIcon />}
+              {dropdownOpen ? (
+                <ChevronDown size={16} />
+              ) : (
+                <ChevronUp size={16} />
+              )}
             </Button>
           </DropdownMenu.Trigger>
           <DropdownMenu.Content>
@@ -68,7 +72,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             onClick={() => canGoBack && onPageChange(currentPage - 1)}
             aria-label="Previous Page"
           >
-            <ChevronLeftIcon />
+            <ChevronLeft size={16} />
           </IconButton>
           <Text size="2">
             Page {currentPage} of {totalPages}
@@ -80,7 +84,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             onClick={() => canGoForward && onPageChange(currentPage + 1)}
             aria-label="Next Page"
           >
-            <ChevronRightIcon />
+            <ChevronRight size={16} />
           </IconButton>
         </Flex>
         {typeof totalItems === "number" && typeof pageSize === "number" && (

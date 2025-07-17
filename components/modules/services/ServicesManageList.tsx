@@ -1,13 +1,12 @@
 "use client";
 
-import { Table, Card, Text, Button, Flex, Checkbox } from "@radix-ui/themes";
-import { EyeOpenIcon, TrashIcon } from "@radix-ui/react-icons";
+import { Table, Card, Text, Flex, Checkbox } from "@radix-ui/themes";
+import { Eye, Trash, MoreVertical } from "lucide-react";
 import { useState, useMemo, useCallback } from "react";
 import { AppBadge } from "../../app/AppBadge";
 import { TablePagination } from "../../shared/table/TablePagination";
 import ServicesFilters from "./filters/ServicesFilters";
 import { IconButton, DropdownMenu } from "@radix-ui/themes";
-import { MoreVertical } from "lucide-react";
 import { formatDateToWords } from "@/utils/helper.utils";
 
 interface Service {
@@ -247,10 +246,10 @@ export const ServicesManageList: React.FC<ServicesManageListProps> = ({
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content>
                         <DropdownMenu.Item>
-                          <EyeOpenIcon style={{ marginRight: 8 }} /> Edit
+                          <Eye style={{ marginRight: 8 }} /> Edit
                         </DropdownMenu.Item>
                         <DropdownMenu.Item color="red">
-                          <TrashIcon style={{ marginRight: 8 }} /> Delete
+                          <Trash style={{ marginRight: 8 }} /> Delete
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
                     </DropdownMenu.Root>

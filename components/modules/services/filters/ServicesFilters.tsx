@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, DropdownMenu, Flex, Text } from "@radix-ui/themes";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 interface Service {
@@ -53,7 +53,7 @@ export default function ServicesFilters({
         <DropdownMenu.Trigger>
           <Button variant="outline" size="2" style={{ minWidth: "140px" }}>
             <Text>{selectedCategory || "All Categories"}</Text>
-            <ChevronDownIcon />
+            <ChevronDown size={16} />
           </Button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>
@@ -80,7 +80,7 @@ export default function ServicesFilters({
                 ? statuses.find((s) => s.value === selectedStatus)?.label
                 : "All Status"}
             </Text>
-            <ChevronDownIcon />
+            <ChevronDown size={16} />
           </Button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>
