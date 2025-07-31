@@ -55,7 +55,7 @@ const menu = [
       {
         label: "Billings & Payments",
         icon: <DollarSign size={18} />,
-        href: "/backoffice-dashboard/app/accounting",
+        href: "/backoffice-dashboard/app/billings-payments",
       },
       {
         label: "Inventory",

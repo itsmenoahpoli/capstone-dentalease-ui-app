@@ -18,6 +18,41 @@ export { DashboardNearAppointments } from "./modules/dashboard/DashboardNearAppo
 export { ServicesManageList } from "./modules/services/ServicesManageList";
 
 /**
+ * Patient Records components
+ */
+export { PatientRecordsList } from "./modules/patient-records/PatientRecordsList";
+
+/**
+ * Billings & Payments components
+ */
+export { BillingsPaymentsList } from "./modules/billings-payments/BillingsPaymentsList";
+
+/**
+ * Inventory components
+ */
+export { InventoryList } from "./modules/inventory/InventoryList";
+
+/**
+ * Prescriptions components
+ */
+export { PrescriptionsList } from "./modules/prescriptions/PrescriptionsList";
+
+/**
+ * CMS components
+ */
+export { ClinicInformationList } from "./modules/cms/ClinicInformationList";
+export { ClinicAnnouncementsList } from "./modules/cms/ClinicAnnouncementsList";
+export { LatestDevelopmentsList } from "./modules/cms/LatestDevelopmentsList";
+export { OwnerInformationList } from "./modules/cms/OwnerInformationList";
+export { OurTeamList } from "./modules/cms/OurTeamList";
+
+/**
+ * Support components
+ */
+export { ContactUsEntriesList } from "./modules/support/ContactUsEntriesList";
+export { AiChatbotList } from "./modules/support/AiChatbotList";
+
+/**
  * Shared components
  */
 export { ErrorLabel } from "./shared/ErrorLabel";
