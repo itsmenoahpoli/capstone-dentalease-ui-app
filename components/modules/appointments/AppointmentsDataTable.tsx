@@ -1,25 +1,30 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button, Badge, Select } from "@radix-ui/themes";
-import { Edit, Trash2, Eye, Plus } from "lucide-react";
+import {
+  Button,
+  Select,
+  Table,
+  Card,
+  Text,
+  Flex,
+  Checkbox,
+  IconButton,
+  DropdownMenu,
+  Badge,
+} from "@radix-ui/themes";
+import { Edit, Trash2, Eye, Plus, MoreVertical, Loader } from "lucide-react";
 import {
   appointmentsService,
   Appointment,
 } from "@/services/appointments.service";
 import AppointmentFormModal from "./AppointmentFormModal";
 import AppointmentDetailsModal from "./AppointmentDetailsModal";
+import { AppBadge } from "../../app/AppBadge";
 
 interface AppointmentsDataTableProps {
   onRefresh: () => void;
 }
-
-const statusColors = {
-  pending: "bg-yellow-100 text-yellow-800",
-  confirmed: "bg-blue-100 text-blue-800",
-  cancelled: "bg-red-100 text-red-800",
-  completed: "bg-green-100 text-green-800",
-};
 
 export default function AppointmentsDataTable({
   onRefresh,
@@ -31,6 +36,9 @@ export default function AppointmentsDataTable({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [selectedAppointments, setSelectedAppointments] = useState<Set<number>>(
+    new Set()
+  );
 
   const fetchAppointments = async () => {
     try {
@@ -70,23 +78,46 @@ export default function AppointmentsDataTable({
     }
   };
 
-  const handleStatusChange = async (
-    id: number,
-    newStatus: Appointment["status"]
-  ) => {
-    try {
-      await appointmentsService.updateAppointmentStatus(id, newStatus);
-      fetchAppointments();
-      onRefresh();
-    } catch (error) {
-      console.error("Error updating appointment status:", error);
-    }
-  };
-
   const filteredAppointments = appointments.filter(
     (appointment) =>
       statusFilter === "all" || appointment.status === statusFilter
   );
+
+  const filteredAppointmentIds = new Set(
+    filteredAppointments.map((appointment) => appointment.id)
+  );
+  const selectedFilteredAppointments = new Set(
+    Array.from(selectedAppointments).filter((id) =>
+      filteredAppointmentIds.has(id)
+    )
+  );
+  const isAllSelected =
+    filteredAppointments.length > 0 &&
+    selectedFilteredAppointments.size === filteredAppointments.length;
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedAppointments(
+        new Set([...selectedAppointments, ...filteredAppointmentIds])
+      );
+    } else {
+      const newSelected = new Set(selectedAppointments);
+      filteredAppointmentIds.forEach((id) => newSelected.delete(id));
+      setSelectedAppointments(newSelected);
+    }
+  };
+
+  const handleSelectAppointment = (appointmentId: number, checked: boolean) => {
+    setSelectedAppointments((prev) => {
+      const newSelected = new Set(prev);
+      if (checked) {
+        newSelected.add(appointmentId);
+      } else {
+        newSelected.delete(appointmentId);
+      }
+      return newSelected;
+    });
+  };
 
   const formatDateTime = (date: string, time: string) => {
     const dateObj = new Date(`${date}T${time}`);
@@ -102,146 +133,178 @@ export default function AppointmentsDataTable({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
+      <Card>
+        <Flex
+          direction="column"
+          align="center"
+          justify="center"
+          className="py-12 px-6"
+          gap="3"
+        >
+          <Loader className="animate-spin" size={32} />
+          <Text size="3" weight="medium" color="gray">
+            Loading appointments...
+          </Text>
+        </Flex>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <Select.Root value={statusFilter} onValueChange={setStatusFilter}>
-            <Select.Trigger placeholder="Filter by status" />
-            <Select.Content>
-              <Select.Item value="all">All Status</Select.Item>
-              <Select.Item value="pending">Pending</Select.Item>
-              <Select.Item value="confirmed">Confirmed</Select.Item>
-              <Select.Item value="cancelled">Cancelled</Select.Item>
-              <Select.Item value="completed">Completed</Select.Item>
-            </Select.Content>
-          </Select.Root>
-        </div>
-        <Button onClick={() => setIsModalOpen(true)}>
-          <Plus size={16} />
-          New Appointment
-        </Button>
-      </div>
+    <Card>
+      <Flex direction="column" gap="4">
+        <Flex justify="between" align="center">
+          <div className="flex items-center gap-4">
+            <Select.Root value={statusFilter} onValueChange={setStatusFilter}>
+              <Select.Trigger placeholder="Filter by status" />
+              <Select.Content>
+                <Select.Item value="all">All Status</Select.Item>
+                <Select.Item value="pending">Pending</Select.Item>
+                <Select.Item value="confirmed">Confirmed</Select.Item>
+                <Select.Item value="cancelled">Cancelled</Select.Item>
+                <Select.Item value="completed">Completed</Select.Item>
+              </Select.Content>
+            </Select.Root>
+          </div>
+          <Button onClick={() => setIsModalOpen(true)}>
+            <Plus size={16} />
+            New Appointment
+          </Button>
+        </Flex>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Patient
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Schedule
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Purpose
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contact
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredAppointments.map((appointment) => (
-                <tr key={appointment.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+        <Table.Root>
+          <Table.Header>
+            <Table.Row>
+              <Table.ColumnHeaderCell>
+                <Checkbox
+                  checked={isAllSelected}
+                  onCheckedChange={handleSelectAll}
+                />
+              </Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell>ID</Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell>Patient</Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell>Schedule</Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell>Purpose</Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell>Status</Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell>Contact</Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
+            </Table.Row>
+          </Table.Header>
+
+          <Table.Body>
+            {filteredAppointments.length === 0 ? (
+              <Table.Row>
+                <Table.Cell colSpan={8}>
+                  <Flex
+                    direction="column"
+                    align="center"
+                    justify="center"
+                    className="py-12 px-6"
+                    gap="3"
+                  >
+                    <Text size="5" weight="medium" color="gray">
+                      No appointments found
+                    </Text>
+                    <Text size="2" color="gray">
+                      Add your first appointment to get started
+                    </Text>
+                  </Flex>
+                </Table.Cell>
+              </Table.Row>
+            ) : (
+              filteredAppointments.map((appointment) => (
+                <Table.Row key={appointment.id}>
+                  <Table.Cell>
+                    <Checkbox
+                      checked={selectedAppointments.has(appointment.id)}
+                      onCheckedChange={(checked) =>
+                        handleSelectAppointment(
+                          appointment.id,
+                          checked as boolean
+                        )
+                      }
+                    />
+                  </Table.Cell>
+                  <Table.Cell>AP{appointment.id}</Table.Cell>
+                  <Table.Cell>
                     <div>
-                      <div className="text-sm font-medium text-gray-900">
+                      <Text size="2" weight="medium">
                         {appointment.patient_name}
-                      </div>
-                      <div className="text-sm text-gray-500">
+                      </Text>
+                      <Text size="1" color="gray">
                         {appointment.patient_email}
-                      </div>
+                      </Text>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Text size="2">
                       {formatDateTime(
                         appointment.schedule_date,
                         appointment.schedule_time
                       )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900 max-w-xs truncate">
+                    </Text>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Text size="2" className="max-w-xs truncate">
                       {appointment.purpose}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <Select.Root
-                      value={appointment.status}
-                      onValueChange={(value) =>
-                        handleStatusChange(
-                          appointment.id,
-                          value as Appointment["status"]
-                        )
-                      }
-                    >
-                      <Select.Trigger className="w-32" />
-                      <Select.Content>
-                        <Select.Item value="pending">Pending</Select.Item>
-                        <Select.Item value="confirmed">Confirmed</Select.Item>
-                        <Select.Item value="cancelled">Cancelled</Select.Item>
-                        <Select.Item value="completed">Completed</Select.Item>
-                      </Select.Content>
-                    </Select.Root>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {appointment.patient_contact}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="1"
-                        onClick={() => handleViewDetails(appointment)}
+                    </Text>
+                  </Table.Cell>
+                  <Table.Cell>
+                    {appointment.status === "pending" ||
+                    appointment.status === "completed" ? (
+                      <AppBadge status={appointment.status}>
+                        {appointment.status.charAt(0).toUpperCase() +
+                          appointment.status.slice(1)}
+                      </AppBadge>
+                    ) : (
+                      <Badge
+                        color={
+                          appointment.status === "confirmed" ? "blue" : "red"
+                        }
+                        variant="soft"
                       >
-                        <Eye size={14} />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="1"
-                        onClick={() => handleEdit(appointment)}
-                      >
-                        <Edit size={14} />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="1"
-                        onClick={() => handleDelete(appointment.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 size={14} />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {filteredAppointments.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No appointments found
-        </div>
-      )}
+                        {appointment.status.charAt(0).toUpperCase() +
+                          appointment.status.slice(1)}
+                      </Badge>
+                    )}
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Text size="2">{appointment.patient_contact}</Text>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <DropdownMenu.Root>
+                      <DropdownMenu.Trigger>
+                        <IconButton variant="ghost" size="1">
+                          <MoreVertical size={16} />
+                        </IconButton>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content>
+                        <DropdownMenu.Item
+                          onClick={() => handleViewDetails(appointment)}
+                        >
+                          <Eye size={15} style={{ marginRight: 8 }} /> View
+                          Details
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                          onClick={() => handleEdit(appointment)}
+                        >
+                          <Edit size={15} style={{ marginRight: 8 }} /> Edit
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                          color="red"
+                          onClick={() => handleDelete(appointment.id)}
+                        >
+                          <Trash2 size={15} style={{ marginRight: 8 }} /> Delete
+                        </DropdownMenu.Item>
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Root>
+                  </Table.Cell>
+                </Table.Row>
+              ))
+            )}
+          </Table.Body>
+        </Table.Root>
+      </Flex>
 
       <AppointmentFormModal
         isOpen={isModalOpen}
@@ -264,6 +327,6 @@ export default function AppointmentsDataTable({
         }}
         appointment={selectedAppointment}
       />
-    </div>
+    </Card>
   );
 }

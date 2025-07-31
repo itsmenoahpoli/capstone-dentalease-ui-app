@@ -175,8 +175,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           <div className="px-3 pb-4">
             <UserSidebarProfile
-              name="Patrick"
-              email="patrick.policarpio@domain.com"
+              name="Administrator"
+              email="administrator@dentalease.com"
             />
           </div>
         </div>

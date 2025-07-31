@@ -4,7 +4,6 @@ import { Table, Card, Text, Flex, Checkbox, Button } from "@radix-ui/themes";
 import { Eye, Trash, MoreVertical, Plus, Loader } from "lucide-react";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { AppBadge } from "../../app/AppBadge";
-import { TablePagination } from "../../shared/table/TablePagination";
 import ServicesFilters from "./filters/ServicesFilters";
 import { IconButton, DropdownMenu } from "@radix-ui/themes";
 import { formatDateToWords } from "@/utils/helper.utils";
@@ -377,11 +376,6 @@ export const ServicesManageList: React.FC<ServicesManageListProps> = ({
             )}
           </Table.Body>
         </Table.Root>
-        <TablePagination
-          currentPage={1}
-          totalPages={25}
-          onPageChange={() => null}
-        />
       </Flex>
 
       <OfferedServiceFormModal
