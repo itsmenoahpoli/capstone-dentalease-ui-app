@@ -21,6 +21,7 @@ import {
 import { Flex, Avatar } from "@radix-ui/themes";
 import { AppBreadcrumbs, AppClock, UserSidebarProfile } from "@/components";
 import { useEffect } from "react";
+import authService from "@/services/auth.service";
 
 const menu = [
   {
@@ -131,6 +132,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return href === pathname;
   };
 
+  const handleSignOut = async () => {
+    try {
+      await authService.signOut();
+    } catch (error) {
+      console.error("Sign out failed:", error);
+    }
+  };
+
   return (
     <div className="flex h-screen w-full">
       <div className="w-64 h-full bg-[#0c1427] flex flex-col fixed left-0 top-0 z-50">
@@ -206,7 +215,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       My Account
                     </DropdownMenu.Item>
                   </Link>
-                  <DropdownMenu.Item className="px-4 py-2 text-sm text-red-500 hover:bg-red-100 cursor-pointer focus:outline-none hover:outline-none">
+                  <DropdownMenu.Item
+                    className="px-4 py-2 text-sm text-red-500 hover:bg-red-100 cursor-pointer focus:outline-none hover:outline-none"
+                    onClick={handleSignOut}
+                  >
                     Sign Out
                   </DropdownMenu.Item>
                 </DropdownMenu.Content>

@@ -46,7 +46,7 @@ class AuthService {
     } finally {
       localStorage.removeItem("auth_token");
       localStorage.removeItem("user");
-      window.location.href = "/auth/signin";
+      window.location.href = "/app/backoffice-dashboard/auth/signin";
     }
   }
 
