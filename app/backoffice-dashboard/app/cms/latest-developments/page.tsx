@@ -1,5 +1,5 @@
-import { Flex, Button } from "@radix-ui/themes";
-import { PageHeader, LatestDevelopmentsList } from "@/components";
+import { Flex } from "@radix-ui/themes";
+import { PageHeader, CMSForm } from "@/components";
 
 export const metadata = {
   title: "Latest Developments | DentalEase",
@@ -12,17 +12,8 @@ export default function Page() {
       <PageHeader
         title="Latest Developments"
         description="Manage latest developments"
-      >
-        <Flex gap="2">
-          <Button size="1" variant="soft">
-            EXPORT DATA
-          </Button>
-          <Button size="1" variant="soft">
-            IMPORT DATA
-          </Button>
-        </Flex>
-      </PageHeader>
-      <LatestDevelopmentsList />
+      />
+      <CMSForm category="latest_developments" categoryDisplay="" />
     </Flex>
   );
 }

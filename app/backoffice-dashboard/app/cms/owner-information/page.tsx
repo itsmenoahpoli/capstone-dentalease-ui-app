@@ -1,5 +1,5 @@
-import { Flex, Button } from "@radix-ui/themes";
-import { PageHeader, OwnerInformationList } from "@/components";
+import { Flex } from "@radix-ui/themes";
+import { PageHeader, CMSForm } from "@/components";
 
 export const metadata = {
   title: "Owner Information | DentalEase",
@@ -12,17 +12,8 @@ export default function Page() {
       <PageHeader
         title="Owner Information"
         description="Manage owner information"
-      >
-        <Flex gap="2">
-          <Button size="1" variant="soft">
-            EXPORT DATA
-          </Button>
-          <Button size="1" variant="soft">
-            IMPORT DATA
-          </Button>
-        </Flex>
-      </PageHeader>
-      <OwnerInformationList />
+      />
+      <CMSForm category="owner_information" categoryDisplay="" />
     </Flex>
   );
 }

@@ -1,5 +1,5 @@
-import { Flex, Button } from "@radix-ui/themes";
-import { PageHeader, ClinicAnnouncementsList } from "@/components";
+import { Flex } from "@radix-ui/themes";
+import { PageHeader, ClinicAnnouncementsGrid } from "@/components";
 
 export const metadata = {
   title: "Clinic Announcements | DentalEase",
@@ -12,17 +12,11 @@ export default function Page() {
       <PageHeader
         title="Clinic Announcements"
         description="Manage clinic announcements"
-      >
-        <Flex gap="2">
-          <Button size="1" variant="soft">
-            EXPORT DATA
-          </Button>
-          <Button size="1" variant="soft">
-            IMPORT DATA
-          </Button>
-        </Flex>
-      </PageHeader>
-      <ClinicAnnouncementsList />
+      />
+      <ClinicAnnouncementsGrid
+        category="clinic_announcements"
+        categoryDisplay="Clinic Announcements"
+      />
     </Flex>
   );
 }

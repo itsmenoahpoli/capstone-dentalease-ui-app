@@ -44,6 +44,10 @@ export { PrescriptionsList } from "./modules/prescriptions/PrescriptionsList";
 /**
  * CMS components
  */
+export { CMSDataTable } from "./modules/cms/CMSDataTable";
+export { CMSForm } from "./modules/cms/CMSForm";
+export { WYSIWYGEditor } from "./modules/cms/WYSIWYGEditor";
+export { ClinicAnnouncementsGrid } from "./modules/cms/ClinicAnnouncementsGrid";
 export { ClinicInformationList } from "./modules/cms/ClinicInformationList";
 export { ClinicAnnouncementsList } from "./modules/cms/ClinicAnnouncementsList";
 export { LatestDevelopmentsList } from "./modules/cms/LatestDevelopmentsList";
