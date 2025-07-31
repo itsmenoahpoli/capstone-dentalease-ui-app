@@ -1,0 +1,70 @@
+"use client";
+import Link from "next/link";
+import Image from "next/image";
+
+export default function HeaderNav() {
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/assets/brand-logo.png"
+                alt="DentalEase"
+                width={120}
+                height={40}
+                className="h-8 w-auto"
+              />
+            </Link>
+          </div>
+
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link
+              href="#services"
+              className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+            >
+              Offered Services
+            </Link>
+            <Link
+              href="#appointments"
+              className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+            >
+              Appointments
+            </Link>
+            <Link
+              href="#clinic"
+              className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+            >
+              Our Clinic
+            </Link>
+            <Link
+              href="#contact"
+              className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+            >
+              Contact
+            </Link>
+          </nav>
+
+          <div className="md:hidden">
+            <button className="text-gray-700 hover:text-blue-600">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}

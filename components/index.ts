@@ -66,3 +66,5 @@ export { AiChatbotList } from "./modules/support/AiChatbotList";
 export { ErrorLabel } from "./shared/ErrorLabel";
 export { PageHeader } from "./shared/dashboard/PageHeader";
 export { TablePagination } from "./shared/table/TablePagination";
+export { default as HeaderNav } from "./shared/HeaderNav";
+export { default as FooterNav } from "./shared/FooterNav";
