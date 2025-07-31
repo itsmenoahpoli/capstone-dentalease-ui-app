@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { TextField, Flex, Button } from "@radix-ui/themes";
 import { ErrorLabel } from "../../shared/ErrorLabel";
+import authService, { SignInCredentials } from "../../../services/auth.service";
 
 type FormData = {
   email: string;
@@ -11,14 +12,30 @@ type FormData = {
 };
 
 export const SignInForm: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
+  const onSubmit = async (data: SignInCredentials) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await authService.signInAndRedirect(data);
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Sign in failed. Please try again.";
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -56,14 +73,16 @@ export const SignInForm: React.FC = () => {
         />
       </Flex>
 
+      {error && <ErrorLabel message={error} />}
+
       <div className="flex justify-end">
         <a href="#" className="text-sm text-blue-300 hover:underline">
           Forgot password?
         </a>
       </div>
 
-      <Button type="submit" color="blue">
-        SIGN IN
+      <Button type="submit" color="blue" disabled={isLoading}>
+        {isLoading ? "SIGNING IN..." : "SIGN IN"}
       </Button>
     </form>
   );
