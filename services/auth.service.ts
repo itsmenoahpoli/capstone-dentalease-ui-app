@@ -30,7 +30,7 @@ class AuthService {
       localStorage.setItem("auth_token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      window.location.href = "/backoffice-dashboard";
+      window.location.href = "/backoffice-dashboard/app";
 
       return response.data;
     } catch (error) {
@@ -55,6 +55,7 @@ class AuthService {
       const response = await httpService.get<AuthResponse["user"]>("/auth/me");
       return response.data;
     } catch (error) {
+      console.error("Get current user error:", error);
       return null;
     }
   }

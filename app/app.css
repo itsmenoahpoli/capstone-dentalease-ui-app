@@ -28,3 +28,48 @@ input {
 button {
   @apply !h-[40px] !cursor-pointer;
 }
+
+/* FullCalendar Styles */
+.fc {
+  @apply font-sans;
+}
+
+.fc-toolbar {
+  @apply mb-4;
+}
+
+.fc-toolbar-title {
+  @apply text-lg font-semibold;
+}
+
+.fc-button {
+  @apply bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm font-medium;
+}
+
+.fc-button:disabled {
+  @apply bg-gray-400 cursor-not-allowed;
+}
+
+.fc-daygrid-day {
+  @apply border border-gray-200;
+}
+
+.fc-daygrid-day-number {
+  @apply text-gray-700;
+}
+
+.fc-event {
+  @apply cursor-pointer;
+}
+
+.fc-event-title {
+  @apply font-medium;
+}
+
+.fc-timegrid-slot {
+  @apply border-gray-200;
+}
+
+.fc-list-item {
+  @apply border-gray-200;
+}
