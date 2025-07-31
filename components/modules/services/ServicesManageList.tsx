@@ -1,120 +1,98 @@
 "use client";
 
-import { Table, Card, Text, Flex, Checkbox } from "@radix-ui/themes";
-import { Eye, Trash, MoreVertical } from "lucide-react";
-import { useState, useMemo, useCallback } from "react";
+import { Table, Card, Text, Flex, Checkbox, Button } from "@radix-ui/themes";
+import { Eye, Trash, MoreVertical, Plus, Loader } from "lucide-react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { AppBadge } from "../../app/AppBadge";
 import { TablePagination } from "../../shared/table/TablePagination";
 import ServicesFilters from "./filters/ServicesFilters";
 import { IconButton, DropdownMenu } from "@radix-ui/themes";
 import { formatDateToWords } from "@/utils/helper.utils";
-
-interface Service {
-  id: string;
-  category: string;
-  name: string;
-  price: number;
-  status: "offered" | "not_offered";
-  dateAdded: string;
-  lastUpdated: string;
-}
+import {
+  OfferedService,
+  CreateOfferedServicePayload,
+  UpdateOfferedServicePayload,
+} from "@/services/offered-services.service";
+import offeredServicesService from "@/services/offered-services.service";
+import { OfferedServiceFormModal } from "./OfferedServiceFormModal";
+import { DeleteServiceModal } from "./DeleteServiceModal";
+import { toast } from "react-toastify";
 
 interface ServicesManageListProps {
-  services?: Service[];
+  services?: OfferedService[];
 }
 
-const dummyServices: Service[] = [
-  {
-    id: "SVC001",
-    category: "Preventive Care",
-    name: "Dental Cleaning",
-    price: 120,
-    status: "offered",
-    dateAdded: "2024-05-01T10:00:00Z",
-    lastUpdated: "2024-05-10T15:30:00Z",
-  },
-  {
-    id: "SVC002",
-    category: "Preventive Care",
-    name: "Dental Exam",
-    price: 85,
-    status: "offered",
-    dateAdded: "2024-05-02T11:00:00Z",
-    lastUpdated: "2024-05-11T16:00:00Z",
-  },
-  {
-    id: "SVC003",
-    category: "Restoration Procedure",
-    name: "Cavity Filling",
-    price: 150,
-    status: "offered",
-    dateAdded: "2024-05-03T12:00:00Z",
-    lastUpdated: "2024-05-12T17:00:00Z",
-  },
-  {
-    id: "SVC004",
-    category: "Restoration Procedure",
-    name: "Root Canal",
-    price: 1200,
-    status: "offered",
-    dateAdded: "2024-05-04T13:00:00Z",
-    lastUpdated: "2024-05-13T18:00:00Z",
-  },
-  {
-    id: "SVC005",
-    category: "Cosmetic Dentistry",
-    name: "Teeth Whitening",
-    price: 300,
-    status: "offered",
-    dateAdded: "2024-05-05T14:00:00Z",
-    lastUpdated: "2024-05-14T19:00:00Z",
-  },
-  {
-    id: "SVC006",
-    category: "Specialized Treatment",
-    name: "Braces Consultation",
-    price: 200,
-    status: "not_offered",
-    dateAdded: "2024-05-06T15:00:00Z",
-    lastUpdated: "2024-05-15T20:00:00Z",
-  },
-  {
-    id: "SVC007",
-    category: "Specialized Treatment",
-    name: "Wisdom Tooth Extraction",
-    price: 450,
-    status: "offered",
-    dateAdded: "2024-05-07T16:00:00Z",
-    lastUpdated: "2024-05-16T21:00:00Z",
-  },
-  {
-    id: "SVC008",
-    category: "Cosmetic Dentistry",
-    name: "Veneers",
-    price: 1200,
-    status: "not_offered",
-    dateAdded: "2024-05-08T17:00:00Z",
-    lastUpdated: "2024-05-17T22:00:00Z",
-  },
-];
-
 export const ServicesManageList: React.FC<ServicesManageListProps> = ({
-  services = dummyServices,
+  services,
 }) => {
-  const [selectedServices, setSelectedServices] = useState<Set<string>>(
+  const [selectedServices, setSelectedServices] = useState<Set<number>>(
     new Set()
   );
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<
+    OfferedService | undefined
+  >();
+  const [isLoading, setIsLoading] = useState(false);
+  const [servicesList, setServicesList] = useState<OfferedService[]>(
+    services || []
+  );
+  const [isFetching, setIsFetching] = useState(false);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      if (!services || services.length === 0) {
+        setIsFetching(true);
+        try {
+          const fetchedServices = await offeredServicesService.getAll();
+          console.log("Fetched services:", fetchedServices);
+          if (Array.isArray(fetchedServices)) {
+            setServicesList(fetchedServices);
+          } else {
+            console.error("API did not return an array:", fetchedServices);
+            setServicesList([]);
+            toast.warning("No services found or invalid data received", {
+              position: "top-center",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching services:", error);
+          setServicesList([]);
+          toast.error("Failed to load services. Please refresh the page.", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        } finally {
+          setIsFetching(false);
+        }
+      }
+    };
+
+    fetchServices();
+  }, [services]);
 
   const filteredServices = useMemo(() => {
-    return services.filter((service) => {
+    if (!Array.isArray(servicesList)) {
+      return [];
+    }
+    return servicesList.filter((service) => {
       const categoryMatch =
         !categoryFilter || service.category === categoryFilter;
       const statusMatch = !statusFilter || service.status === statusFilter;
       return categoryMatch && statusMatch;
     });
-  }, [services, categoryFilter, statusFilter]);
+  }, [servicesList, categoryFilter, statusFilter]);
 
   const filteredServiceIds = useMemo(() => {
     return new Set(filteredServices.map((service) => service.id));
@@ -149,7 +127,7 @@ export const ServicesManageList: React.FC<ServicesManageListProps> = ({
   );
 
   const handleSelectService = useCallback(
-    (serviceId: string, checked: boolean) => {
+    (serviceId: number, checked: boolean) => {
       setSelectedServices((prev) => {
         const newSelected = new Set(prev);
         if (checked) {
@@ -163,14 +141,132 @@ export const ServicesManageList: React.FC<ServicesManageListProps> = ({
     []
   );
 
+  const handleCreateService = async (payload: CreateOfferedServicePayload) => {
+    setIsLoading(true);
+    try {
+      const newService = await offeredServicesService.create(payload);
+      setServicesList((prev) => [...prev, newService]);
+      toast.success("Service created successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (error) {
+      console.error("Error creating service:", error);
+      toast.error("Failed to create service. Please try again.", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateService = async (payload: UpdateOfferedServicePayload) => {
+    if (!selectedService) return;
+
+    setIsLoading(true);
+    try {
+      const updatedService = await offeredServicesService.update(
+        selectedService.id,
+        payload
+      );
+      setServicesList((prev) =>
+        prev.map((service) =>
+          service.id === selectedService.id ? updatedService : service
+        )
+      );
+      toast.success("Service updated successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (error) {
+      console.error("Error updating service:", error);
+      toast.error("Failed to update service. Please try again.", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteService = async () => {
+    if (!selectedService) return;
+
+    setIsLoading(true);
+    try {
+      await offeredServicesService.delete(selectedService.id);
+      setServicesList((prev) =>
+        prev.filter((service) => service.id !== selectedService.id)
+      );
+      toast.success("Service deleted successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (error) {
+      console.error("Error deleting service:", error);
+      toast.error("Failed to delete service. Please try again.", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEditService = (service: OfferedService) => {
+    setSelectedService(service);
+    setIsFormModalOpen(true);
+  };
+
+  const handleDeleteClick = (service: OfferedService) => {
+    setSelectedService(service);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleAddNewService = () => {
+    setSelectedService(undefined);
+    setIsFormModalOpen(true);
+  };
+
   return (
     <Card>
       <Flex direction="column" gap="4">
-        <ServicesFilters
-          services={services}
-          onCategoryChange={setCategoryFilter}
-          onStatusChange={setStatusFilter}
-        />
+        <Flex justify="between" align="center">
+          <ServicesFilters
+            services={servicesList}
+            onCategoryChange={setCategoryFilter}
+            onStatusChange={setStatusFilter}
+          />
+          <Button onClick={handleAddNewService}>
+            <Plus size={16} />
+            Add Service
+          </Button>
+        </Flex>
         <Table.Root>
           <Table.Header>
             <Table.Row>
@@ -192,9 +288,26 @@ export const ServicesManageList: React.FC<ServicesManageListProps> = ({
           </Table.Header>
 
           <Table.Body>
-            {filteredServices.length === 0 ? (
+            {isFetching ? (
               <Table.Row>
-                <Table.Cell colSpan={7}>
+                <Table.Cell colSpan={9}>
+                  <Flex
+                    direction="column"
+                    align="center"
+                    justify="center"
+                    className="py-12 px-6"
+                    gap="3"
+                  >
+                    <Loader className="animate-spin" size={32} />
+                    <Text size="3" weight="medium" color="gray">
+                      Loading services...
+                    </Text>
+                  </Flex>
+                </Table.Cell>
+              </Table.Row>
+            ) : filteredServices.length === 0 ? (
+              <Table.Row>
+                <Table.Cell colSpan={9}>
                   <Flex
                     direction="column"
                     align="center"
@@ -222,15 +335,15 @@ export const ServicesManageList: React.FC<ServicesManageListProps> = ({
                       }
                     />
                   </Table.Cell>
-                  <Table.Cell>{service.id}</Table.Cell>
+                  <Table.Cell>SV{service.id}</Table.Cell>
                   <Table.Cell>{service.category}</Table.Cell>
                   <Table.Cell>{service.name}</Table.Cell>
-                  <Table.Cell>PHP {service.price.toFixed(2)}</Table.Cell>
+                  <Table.Cell>PHP {service.price}</Table.Cell>
                   <Table.Cell>
-                    {formatDateToWords(service.dateAdded)}
+                    {formatDateToWords(service.created_at)}
                   </Table.Cell>
                   <Table.Cell>
-                    {formatDateToWords(service.lastUpdated)}
+                    {formatDateToWords(service.updated_at)}
                   </Table.Cell>
                   <Table.Cell>
                     <AppBadge status={service.status}>
@@ -245,10 +358,15 @@ export const ServicesManageList: React.FC<ServicesManageListProps> = ({
                         </IconButton>
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content>
-                        <DropdownMenu.Item>
+                        <DropdownMenu.Item
+                          onClick={() => handleEditService(service)}
+                        >
                           <Eye size={15} style={{ marginRight: 8 }} /> Edit
                         </DropdownMenu.Item>
-                        <DropdownMenu.Item color="red">
+                        <DropdownMenu.Item
+                          color="red"
+                          onClick={() => handleDeleteClick(service)}
+                        >
                           <Trash size={15} style={{ marginRight: 8 }} /> Delete
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
@@ -265,6 +383,22 @@ export const ServicesManageList: React.FC<ServicesManageListProps> = ({
           onPageChange={() => null}
         />
       </Flex>
+
+      <OfferedServiceFormModal
+        isOpen={isFormModalOpen}
+        onClose={() => setIsFormModalOpen(false)}
+        onSubmit={selectedService ? handleUpdateService : handleCreateService}
+        service={selectedService}
+        isLoading={isLoading}
+      />
+
+      <DeleteServiceModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteService}
+        service={selectedService}
+        isLoading={isLoading}
+      />
     </Card>
   );
 };

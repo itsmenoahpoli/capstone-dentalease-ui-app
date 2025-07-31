@@ -16,7 +16,6 @@ export { DashboardNearAppointments } from "./modules/dashboard/DashboardNearAppo
  * Services components
  */
 export { ServicesManageList } from "./modules/services/ServicesManageList";
-export { ServiceDetailsFormModal } from "./modules/services/ServiceDetailsFormModal";
 
 /**
  * Shared components

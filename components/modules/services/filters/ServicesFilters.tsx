@@ -4,16 +4,10 @@ import { Button, DropdownMenu, Flex, Text } from "@radix-ui/themes";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
-interface Service {
-  id: string;
-  category: string;
-  name: string;
-  price: number;
-  status: "offered" | "not_offered";
-}
+import { OfferedService } from "@/services/offered-services.service";
 
 interface ServicesFiltersProps {
-  services: Service[];
+  services: OfferedService[];
   onCategoryChange: (category: string | null) => void;
   onStatusChange: (status: string | null) => void;
 }
