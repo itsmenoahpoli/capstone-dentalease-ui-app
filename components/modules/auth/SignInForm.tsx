@@ -19,7 +19,12 @@ export const SignInForm: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormData>({
+    defaultValues: {
+      email: "administrator@dentalease.com",
+      password: "password",
+    },
+  });
 
   const onSubmit = async (data: SignInCredentials) => {
     setIsLoading(true);
