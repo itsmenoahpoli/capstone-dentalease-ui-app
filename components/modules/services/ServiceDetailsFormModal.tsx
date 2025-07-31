@@ -1,15 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import {
-  Dialog,
-  Button,
-  Flex,
-  Text,
-  TextField,
-  Select,
-} from "@radix-ui/themes";
-import { useState } from "react";
+import { Dialog, Button, Flex, TextField, Select } from "@radix-ui/themes";
 import { ErrorLabel } from "@/components/shared/ErrorLabel";
 
 type ServiceFormValues = {
@@ -36,6 +28,7 @@ export const ServiceDetailsFormModal: React.FC<
   onOpenChange,
   mode = "add",
 }) => {
+  console.log(triggerLabel);
   const {
     register,
     handleSubmit,
@@ -56,6 +49,7 @@ export const ServiceDetailsFormModal: React.FC<
   };
 
   const submitHandler = (data: ServiceFormValues) => {
+    console.log(data);
     handleClose();
   };
 
