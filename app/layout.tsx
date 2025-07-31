@@ -2,7 +2,6 @@ import { Inter } from "next/font/google";
 import { Theme } from "@radix-ui/themes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { HeaderNav, FooterNav } from "@/components";
 import "./app.css";
 
 const inter = Inter({
@@ -20,9 +19,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Theme scaling="90%">
           <div className="min-h-screen">
-            <HeaderNav />
-            <main className="pt-16">{children}</main>
-            <FooterNav />
+            <main>{children}</main>
           </div>
           <ToastContainer
             position="top-center"

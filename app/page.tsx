@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { HeaderNav, FooterNav } from "@/components";
 
 export const metadata = {
   title: "DentalEase | Home",
@@ -9,6 +10,7 @@ export const metadata = {
 export default function Home() {
   return (
     <>
+      <HeaderNav />
       <section className="relative h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="absolute inset-0 overflow-hidden">
           <Image
@@ -427,6 +429,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <FooterNav />
     </>
   );
 }
