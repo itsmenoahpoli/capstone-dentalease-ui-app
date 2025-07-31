@@ -20,7 +20,11 @@ export { ServicesManageList } from "./modules/services/ServicesManageList";
 /**
  * Patient Records components
  */
-export { PatientRecordsList } from "./modules/patient-records/PatientRecordsList";
+export {
+  PatientRecordsList,
+  PatientFormModal,
+  DeletePatientModal,
+} from "./modules/patient-records";
 
 /**
  * Billings & Payments components
