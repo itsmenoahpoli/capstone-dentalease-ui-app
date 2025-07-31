@@ -46,7 +46,7 @@ export const CMSDataTable: React.FC<CMSDataTableProps> = ({
     setIsLoading(true);
     try {
       const data = await cmsService.getCMSContentByCategory(category);
-      setCmsList(data);
+      setCmsList(Array.isArray(data) ? data : [data]);
     } catch (error) {
       console.error("Error loading CMS content:", error);
     } finally {
@@ -287,10 +287,9 @@ export const CMSDataTable: React.FC<CMSDataTableProps> = ({
                       </Text>
                     </Table.Cell>
                     <Table.Cell>
-                      <AppBadge
-                        variant={item.is_active ? "success" : "danger"}
-                        text={item.is_active ? "Active" : "Inactive"}
-                      />
+                      <AppBadge status={item.is_active ? "active" : "inactive"}>
+                        {item.is_active ? "Active" : "Inactive"}
+                      </AppBadge>
                     </Table.Cell>
                     <Table.Cell>
                       <Text size="2" color="gray">
