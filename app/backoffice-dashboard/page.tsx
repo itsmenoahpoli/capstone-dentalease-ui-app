@@ -1,5 +1,5 @@
-"use client";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <div>Hello</div>;
+  redirect("/app/backoffice-dashboard/auth/signin");
 }
