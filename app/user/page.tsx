@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Flex, Card, Button, Text, Badge, Avatar } from "@radix-ui/themes";
+import { Flex, Card, Button, Text, Badge } from "@radix-ui/themes";
 import {
   Calendar,
   CreditCard,
@@ -16,16 +16,12 @@ import {
 import { PageHeader } from "@/components";
 import { HeaderNav, FooterNav } from "@/components";
 import ChatbotWrapper from "@/components/shared/ChatbotWrapper";
+import { UserAppointmentBookingModal } from "@/components/modules/appointments";
 import authService from "@/services/auth.service";
-
-interface Appointment {
-  id: number;
-  date: string;
-  time: string;
-  service: string;
-  status: "upcoming" | "completed" | "cancelled";
-  doctor: string;
-}
+import {
+  appointmentsService,
+  Appointment,
+} from "@/services/appointments.service";
 
 interface Payment {
   id: number;
@@ -46,6 +42,7 @@ interface PatientProfile {
 export default function PatientDashboard() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [profile, setProfile] = useState<PatientProfile>({
     name: "",
     email: "",
@@ -65,7 +62,17 @@ export default function PatientDashboard() {
         emergencyContact: "",
       });
     }
+    loadAppointments();
   }, []);
+
+  const loadAppointments = async () => {
+    try {
+      const appointmentsData = await appointmentsService.getAllAppointments();
+      setAppointments(appointmentsData);
+    } catch (error) {
+      console.error("Error loading appointments:", error);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -100,7 +107,7 @@ export default function PatientDashboard() {
   };
 
   const upcomingAppointments = appointments.filter(
-    (apt) => apt.status === "upcoming"
+    (apt) => apt.status === "pending" || apt.status === "confirmed"
   );
   const totalPayments = payments.reduce(
     (sum, payment) => sum + payment.amount,
@@ -189,7 +196,11 @@ export default function PatientDashboard() {
                   <Text size="5" weight="bold">
                     Recent Appointments
                   </Text>
-                  <Button size="2" variant="soft">
+                  <Button
+                    size="2"
+                    variant="soft"
+                    onClick={() => setIsBookingModalOpen(true)}
+                  >
                     <Plus size={16} />
                     Book New
                   </Button>
@@ -215,12 +226,13 @@ export default function PatientDashboard() {
                         className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                       >
                         <Flex direction="column" gap="1">
-                          <Text weight="medium">{appointment.service}</Text>
+                          <Text weight="medium">{appointment.purpose}</Text>
                           <Text size="2" color="gray">
-                            {appointment.date} at {appointment.time}
+                            {appointment.schedule_date} at{" "}
+                            {appointment.schedule_time}
                           </Text>
                           <Text size="2" color="gray">
-                            {appointment.doctor}
+                            {appointment.patient_name}
                           </Text>
                         </Flex>
                         <Flex align="center" gap="2">
@@ -381,6 +393,12 @@ export default function PatientDashboard() {
       </div>
       <FooterNav />
       <ChatbotWrapper />
+
+      <UserAppointmentBookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        onSuccess={loadAppointments}
+      />
     </>
   );
 }
