@@ -9,11 +9,11 @@ export default function ChatbotButton() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-200"
+        className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white p-6 rounded-full shadow-xl hover:bg-blue-700 transition-all duration-200 hover:scale-110 animate-pulse flex items-center justify-center"
         aria-label="Open chat"
       >
         <svg
-          className="w-6 h-6"
+          className="w-8 h-8"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -28,7 +28,7 @@ export default function ChatbotButton() {
       </button>
 
       {isOpen && (
-        <div className="fixed bottom-20 right-6 z-50 w-80 h-96 bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
+        <div className="fixed bottom-20 right-6 z-50 w-96 h-[28rem] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
           <div className="bg-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
             <h3 className="font-semibold">DentalEase Assistant</h3>
             <button

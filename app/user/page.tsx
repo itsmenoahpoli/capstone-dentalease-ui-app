@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Flex, Card, Button, Text, Badge, Avatar } from "@radix-ui/themes";
 import {
   Calendar,
@@ -16,6 +16,7 @@ import {
 import { PageHeader } from "@/components";
 import { HeaderNav, FooterNav } from "@/components";
 import ChatbotWrapper from "@/components/shared/ChatbotWrapper";
+import authService from "@/services/auth.service";
 
 interface Appointment {
   id: number;
@@ -43,64 +44,28 @@ interface PatientProfile {
 }
 
 export default function PatientDashboard() {
-  const [appointments, setAppointments] = useState<Appointment[]>([
-    {
-      id: 1,
-      date: "2024-01-15",
-      time: "10:00 AM",
-      service: "Dental Cleaning",
-      status: "upcoming",
-      doctor: "Dr. Sarah Johnson",
-    },
-    {
-      id: 2,
-      date: "2024-01-10",
-      time: "2:30 PM",
-      service: "Root Canal",
-      status: "completed",
-      doctor: "Dr. Michael Chen",
-    },
-    {
-      id: 3,
-      date: "2024-01-20",
-      time: "9:00 AM",
-      service: "Cavity Filling",
-      status: "upcoming",
-      doctor: "Dr. Sarah Johnson",
-    },
-  ]);
-
-  const [payments, setPayments] = useState<Payment[]>([
-    {
-      id: 1,
-      amount: 150,
-      date: "2024-01-10",
-      service: "Dental Cleaning",
-      status: "paid",
-    },
-    {
-      id: 2,
-      amount: 500,
-      date: "2024-01-15",
-      service: "Root Canal",
-      status: "pending",
-    },
-    {
-      id: 3,
-      amount: 200,
-      date: "2024-01-25",
-      service: "Cavity Filling",
-      status: "overdue",
-    },
-  ]);
-
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [profile, setProfile] = useState<PatientProfile>({
-    name: "John Doe",
-    email: "john.doe@email.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Main St, City, State 12345",
-    emergencyContact: "Jane Doe - +1 (555) 987-6543",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    emergencyContact: "",
   });
+
+  useEffect(() => {
+    const user = authService.getStoredUser();
+    if (user) {
+      setProfile({
+        name: user.name || "",
+        email: user.email || "",
+        phone: "",
+        address: "",
+        emergencyContact: "",
+      });
+    }
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -191,7 +156,7 @@ export default function PatientDashboard() {
                       Total Payments
                     </span>
                     <span className="text-2xl font-bold text-gray-900">
-                      ${totalPayments}
+                      ₱{totalPayments.toLocaleString()}
                     </span>
                   </Flex>
                 </Flex>
@@ -230,31 +195,46 @@ export default function PatientDashboard() {
                   </Button>
                 </Flex>
                 <div className="p-4 space-y-3">
-                  {appointments.slice(0, 3).map((appointment) => (
-                    <div
-                      key={appointment.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                    >
-                      <Flex direction="column" gap="1">
-                        <Text weight="medium">{appointment.service}</Text>
-                        <Text size="2" color="gray">
-                          {appointment.date} at {appointment.time}
-                        </Text>
-                        <Text size="2" color="gray">
-                          {appointment.doctor}
-                        </Text>
-                      </Flex>
-                      <Flex align="center" gap="2">
-                        <Badge color={getStatusColor(appointment.status)}>
-                          {getStatusIcon(appointment.status)}
-                          {appointment.status}
-                        </Badge>
-                        <Button size="1" variant="ghost">
-                          <Eye size={14} />
-                        </Button>
-                      </Flex>
+                  {appointments.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <Calendar
+                        size={48}
+                        className="mx-auto mb-4 text-gray-300"
+                      />
+                      <Text size="3" color="gray">
+                        No appointments found
+                      </Text>
+                      <Text size="2" color="gray">
+                        Your appointments will appear here
+                      </Text>
                     </div>
-                  ))}
+                  ) : (
+                    appointments.slice(0, 3).map((appointment) => (
+                      <div
+                        key={appointment.id}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      >
+                        <Flex direction="column" gap="1">
+                          <Text weight="medium">{appointment.service}</Text>
+                          <Text size="2" color="gray">
+                            {appointment.date} at {appointment.time}
+                          </Text>
+                          <Text size="2" color="gray">
+                            {appointment.doctor}
+                          </Text>
+                        </Flex>
+                        <Flex align="center" gap="2">
+                          <Badge color={getStatusColor(appointment.status)}>
+                            {getStatusIcon(appointment.status)}
+                            {appointment.status}
+                          </Badge>
+                          <Button size="1" variant="ghost">
+                            <Eye size={14} />
+                          </Button>
+                        </Flex>
+                      </div>
+                    ))
+                  )}
                 </div>
               </Card>
 
@@ -263,38 +243,51 @@ export default function PatientDashboard() {
                   <Text size="5" weight="bold">
                     Payment History
                   </Text>
-                  <Button size="2" variant="soft">
-                    <CreditCard size={16} />
-                    Pay Now
-                  </Button>
                 </Flex>
                 <div className="p-4 space-y-3">
-                  {payments.slice(0, 3).map((payment) => (
-                    <div
-                      key={payment.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                    >
-                      <Flex direction="column" gap="1">
-                        <Text weight="medium">{payment.service}</Text>
-                        <Text size="2" color="gray">
-                          {payment.date}
-                        </Text>
-                      </Flex>
-                      <Flex align="center" gap="2">
-                        <Text weight="bold">${payment.amount}</Text>
-                        <Badge color={getStatusColor(payment.status)}>
-                          {getStatusIcon(payment.status)}
-                          {payment.status}
-                        </Badge>
-                      </Flex>
+                  {payments.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <CreditCard
+                        size={48}
+                        className="mx-auto mb-4 text-gray-300"
+                      />
+                      <Text size="3" color="gray">
+                        No payment history
+                      </Text>
+                      <Text size="2" color="gray">
+                        Your payment history will appear here
+                      </Text>
                     </div>
-                  ))}
+                  ) : (
+                    payments.slice(0, 3).map((payment) => (
+                      <div
+                        key={payment.id}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      >
+                        <Flex direction="column" gap="1">
+                          <Text weight="medium">{payment.service}</Text>
+                          <Text size="2" color="gray">
+                            {payment.date}
+                          </Text>
+                        </Flex>
+                        <Flex align="center" gap="2">
+                          <Text weight="bold">
+                            ₱{payment.amount.toLocaleString()}
+                          </Text>
+                          <Badge color={getStatusColor(payment.status)}>
+                            {getStatusIcon(payment.status)}
+                            {payment.status}
+                          </Badge>
+                        </Flex>
+                      </div>
+                    ))
+                  )}
                 </div>
               </Card>
             </Flex>
 
             <Card>
-              <Flex justify="between" align="center" className="p-4 border-b">
+              <Flex justify="between" align="center" className="p-6 border-b">
                 <Text size="5" weight="bold">
                   Profile Information
                 </Text>
@@ -303,46 +296,83 @@ export default function PatientDashboard() {
                   Edit Profile
                 </Button>
               </Flex>
-              <div className="p-4">
-                <Flex gap="6" direction={{ initial: "column", md: "row" }}>
-                  <Avatar
-                    src="https://randomuser.me/api/portraits/men/32.jpg"
-                    fallback="JD"
-                    size="6"
-                    radius="full"
-                  />
-                  <Flex direction="column" gap="3" className="flex-1">
-                    <div>
-                      <Text size="2" color="gray">
-                        Full Name
+              <div className="p-6">
+                <Flex
+                  gap="8"
+                  direction={{ initial: "column", md: "row" }}
+                  align="start"
+                >
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center">
+                      <Text size="6" weight="bold" className="text-white">
+                        {profile.name
+                          ? profile.name.charAt(0).toUpperCase()
+                          : "U"}
                       </Text>
-                      <Text weight="medium">{profile.name}</Text>
                     </div>
-                    <div>
-                      <Text size="2" color="gray">
-                        Email
-                      </Text>
-                      <Text weight="medium">{profile.email}</Text>
+                    <Text size="3" weight="medium" className="text-center">
+                      {profile.name || "User"}
+                    </Text>
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Text size="2" color="gray" weight="medium">
+                          Full Name
+                        </Text>
+                        <div className="p-3 bg-gray-50 rounded-lg">
+                          <Text weight="medium">
+                            {profile.name || "Not provided"}
+                          </Text>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Text size="2" color="gray" weight="medium">
+                          Email Address
+                        </Text>
+                        <div className="p-3 bg-gray-50 rounded-lg">
+                          <Text weight="medium">
+                            {profile.email || "Not provided"}
+                          </Text>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Text size="2" color="gray" weight="medium">
+                          Phone Number
+                        </Text>
+                        <div className="p-3 bg-gray-50 rounded-lg">
+                          <Text weight="medium">
+                            {profile.phone || "Not provided"}
+                          </Text>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Text size="2" color="gray" weight="medium">
+                          Address
+                        </Text>
+                        <div className="p-3 bg-gray-50 rounded-lg">
+                          <Text weight="medium">
+                            {profile.address || "Not provided"}
+                          </Text>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                        <Text size="2" color="gray" weight="medium">
+                          Emergency Contact
+                        </Text>
+                        <div className="p-3 bg-gray-50 rounded-lg">
+                          <Text weight="medium">
+                            {profile.emergencyContact || "Not provided"}
+                          </Text>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <Text size="2" color="gray">
-                        Phone
-                      </Text>
-                      <Text weight="medium">{profile.phone}</Text>
-                    </div>
-                    <div>
-                      <Text size="2" color="gray">
-                        Address
-                      </Text>
-                      <Text weight="medium">{profile.address}</Text>
-                    </div>
-                    <div>
-                      <Text size="2" color="gray">
-                        Emergency Contact
-                      </Text>
-                      <Text weight="medium">{profile.emergencyContact}</Text>
-                    </div>
-                  </Flex>
+                  </div>
                 </Flex>
               </div>
             </Card>
