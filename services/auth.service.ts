@@ -30,7 +30,11 @@ class AuthService {
       localStorage.setItem("auth_token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      window.location.href = "/backoffice-dashboard/app";
+      if (user.role === "patient") {
+        window.location.href = "/user";
+      } else {
+        window.location.href = "/backoffice-dashboard/app";
+      }
 
       return response.data;
     } catch (error) {

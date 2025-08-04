@@ -1,21 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HeaderNav, FooterNav } from "@/components";
 import { Calendar } from "lucide-react";
 import Image from "next/image";
+import authService from "@/services/auth.service";
+import { Dialog, Flex, Button, Card, Text, TextField } from "@radix-ui/themes";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { ErrorLabel } from "@/components/shared/ErrorLabel";
+import { useForm } from "react-hook-form";
+import httpService from "@/services/http.service";
+
+type FormData = {
+  email: string;
+  password: string;
+};
 
 export default function BookAppointment() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    dateOfBirth: "",
     service: "",
     notes: "",
+    patient_contact: "",
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   const availableTimes = [
@@ -45,13 +69,22 @@ export default function BookAppointment() {
     "Emergency Care",
   ];
 
+  useEffect(() => {
+    const checkAuth = () => {
+      const authenticated = authService.isAuthenticated();
+      setIsAuthenticated(authenticated);
+    };
+
+    checkAuth();
+  }, []);
+
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
   };
 
-  const handleInputChange = (
+  const handleBookingInputChange = (
     e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      HTMLSelectElement | HTMLTextAreaElement | HTMLInputElement
     >
   ) => {
     const { name, value } = e.target;
@@ -61,20 +94,85 @@ export default function BookAppointment() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmitBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDate || !selectedTime) {
       alert("Please select a date and time");
       return;
     }
 
-    console.log("Booking appointment:", {
-      date: selectedDate,
-      time: selectedTime,
-      ...formData,
-    });
+    if (!formData.service) {
+      alert("Please select a service");
+      return;
+    }
 
-    alert("Appointment booked successfully!");
+    if (!formData.patient_contact) {
+      alert("Please provide your contact number");
+      return;
+    }
+
+    const user = authService.getStoredUser();
+
+    const appointmentData = {
+      patient_name: user?.name || "",
+      patient_email: user?.email || "",
+      patient_contact: formData.patient_contact,
+      purpose: formData.service,
+      remarks: formData.notes,
+      schedule_time: selectedTime,
+      schedule_date: selectedDate?.toISOString().split("T")[0],
+      status: "pending",
+    };
+
+    try {
+      console.log("Booking appointment:", appointmentData);
+
+      const response = await httpService.post("/appointments", appointmentData);
+
+      if (response.data) {
+        alert("Appointment booked successfully!");
+        setFormData({
+          service: "",
+          notes: "",
+          patient_contact: "",
+        });
+        setSelectedDate(null);
+        setSelectedTime("");
+      }
+    } catch (error) {
+      console.error("Booking error:", error);
+      alert("Failed to book appointment. Please try again.");
+    }
+  };
+
+  const handleLoginSubmit = async (data: FormData) => {
+    setIsLoading(true);
+    setLoginError(null);
+
+    try {
+      console.log("Sign in attempt:", data);
+      const response = await httpService.post("/auth/signin", {
+        email: data.email,
+        password: data.password,
+      });
+
+      const { token, user } = response.data;
+
+      localStorage.setItem("auth_token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      setIsAuthenticated(true);
+      setShowLoginDialog(false);
+      reset();
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Sign in failed. Please try again.";
+      setLoginError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const generateCalendarDays = () => {
@@ -94,6 +192,7 @@ export default function BookAppointment() {
   };
 
   const calendarDays = generateCalendarDays();
+  const user = authService.getStoredUser();
 
   return (
     <>
@@ -113,7 +212,7 @@ export default function BookAppointment() {
               Book Your Appointment
             </h1>
             <p className="text-xl text-gray-600">
-              Select your preferred date and time, then fill in your information
+              Select your preferred date and time to book your appointment
             </p>
           </div>
 
@@ -194,156 +293,267 @@ export default function BookAppointment() {
 
               <div>
                 <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-                  Patient Information
+                  Appointment Details
                 </h2>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label
-                        htmlFor="firstName"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        First Name *
-                      </label>
-                      <input
-                        type="text"
-                        id="firstName"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="lastName"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Last Name *
-                      </label>
-                      <input
-                        type="text"
-                        id="lastName"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
+                {!isAuthenticated ? (
+                  <div className="bg-blue-50 p-6 rounded-lg text-center">
+                    <h3 className="text-lg font-medium text-blue-900 mb-4">
+                      Patient Login Required
+                    </h3>
+                    <p className="text-blue-700 mb-6">
+                      Please login with your patient account to book an
+                      appointment. Your information will be automatically filled
+                      from your profile.
+                    </p>
+                    <Button
+                      onClick={() => setShowLoginDialog(true)}
+                      className="bg-blue-600 text-white py-3 px-8 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 inline-flex items-center"
+                    >
+                      Login to Book
+                    </Button>
                   </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Email *
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="phone"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Phone Number *
-                      </label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-
+                ) : (
                   <div>
-                    <label
-                      htmlFor="dateOfBirth"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Date of Birth
-                    </label>
-                    <input
-                      type="date"
-                      id="dateOfBirth"
-                      name="dateOfBirth"
-                      value={formData.dateOfBirth}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
+                    <div className="bg-green-50 p-4 rounded-lg mb-6">
+                      <h3 className="text-lg font-medium text-green-900 mb-2">
+                        Welcome, {user?.name}!
+                      </h3>
+                      <p className="text-green-700">
+                        Your information will be automatically filled from your
+                        profile.
+                      </p>
+                    </div>
 
-                  <div>
-                    <label
-                      htmlFor="service"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Service Required *
-                    </label>
-                    <select
-                      id="service"
-                      name="service"
-                      value={formData.service}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Select a service</option>
-                      {services.map((service) => (
-                        <option key={service} value={service}>
-                          {service}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                    <form onSubmit={handleSubmitBooking} className="space-y-4">
+                      <div>
+                        <label
+                          htmlFor="patient_contact"
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                          Contact Number *
+                        </label>
+                        <input
+                          type="tel"
+                          id="patient_contact"
+                          name="patient_contact"
+                          value={formData.patient_contact}
+                          onChange={handleBookingInputChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="+1234567890"
+                        />
+                      </div>
 
-                  <div>
-                    <label
-                      htmlFor="notes"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Additional Notes
-                    </label>
-                    <textarea
-                      id="notes"
-                      name="notes"
-                      value={formData.notes}
-                      onChange={handleInputChange}
-                      rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Any specific concerns or requests..."
-                    />
-                  </div>
+                      <div>
+                        <label
+                          htmlFor="service"
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                          Service Required *
+                        </label>
+                        <select
+                          id="service"
+                          name="service"
+                          value={formData.service}
+                          onChange={handleBookingInputChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">Select a service</option>
+                          {services.map((service) => (
+                            <option key={service} value={service}>
+                              {service}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                  <button
-                    type="submit"
-                    className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200"
-                  >
-                    Book Appointment
-                  </button>
-                </form>
+                      <div>
+                        <label
+                          htmlFor="notes"
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                          Additional Notes
+                        </label>
+                        <textarea
+                          id="notes"
+                          name="notes"
+                          value={formData.notes}
+                          onChange={handleBookingInputChange}
+                          rows={4}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Any specific concerns or requests..."
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200"
+                      >
+                        Book Appointment
+                      </button>
+                    </form>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
       <FooterNav />
+
+      <Dialog.Root open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+        <Dialog.Content className="max-w-md w-full mx-auto">
+          <Dialog.Title className="text-center mb-6">
+            <div className="flex flex-col items-center mb-6">
+              <Image
+                src="/assets/brand-logo.png"
+                alt="DentalEase Logo"
+                width={60}
+                height={60}
+                className="mb-4"
+              />
+              <h1 className="text-xl font-bold text-gray-900 mb-2">
+                DentalEase
+              </h1>
+              <p className="text-xs text-gray-600">Your Dental Care Partner</p>
+            </div>
+          </Dialog.Title>
+
+          <Card className="p-6">
+            <p className="mt-2 mb-6 text-sm text-center text-gray-600">
+              Sign in to your DentalEase patient account
+            </p>
+
+            <form
+              className="space-y-4"
+              onSubmit={handleSubmit(handleLoginSubmit)}
+            >
+              <div>
+                <Flex direction="column" gap="2">
+                  <TextField.Root
+                    type="email"
+                    placeholder="Email address"
+                    size="3"
+                    {...register("email", {
+                      required: "Email is required",
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: "Invalid email address",
+                      },
+                    })}
+                  >
+                    <TextField.Slot>
+                      <Mail size="16" />
+                    </TextField.Slot>
+                  </TextField.Root>
+                  <ErrorLabel
+                    message={
+                      typeof errors.email?.message === "string"
+                        ? errors.email.message
+                        : undefined
+                    }
+                  />
+                </Flex>
+              </div>
+
+              <div>
+                <Flex direction="column" gap="2">
+                  <TextField.Root
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    size="3"
+                    {...register("password", {
+                      required: "Password is required",
+                      minLength: {
+                        value: 6,
+                        message: "Password must be at least 6 characters",
+                      },
+                    })}
+                  >
+                    <TextField.Slot>
+                      <Lock size="16" />
+                    </TextField.Slot>
+                    <TextField.Slot>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="1"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff size="16" />
+                        ) : (
+                          <Eye size="16" />
+                        )}
+                      </Button>
+                    </TextField.Slot>
+                  </TextField.Root>
+                  <ErrorLabel
+                    message={
+                      typeof errors.password?.message === "string"
+                        ? errors.password.message
+                        : undefined
+                    }
+                  />
+                </Flex>
+              </div>
+
+              {loginError && <ErrorLabel message={loginError} />}
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    id="remember-me"
+                    name="remember-me"
+                    type="checkbox"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor="remember-me"
+                    className="ml-2 block text-sm text-gray-900"
+                  >
+                    Remember me
+                  </label>
+                </div>
+
+                <div className="text-sm">
+                  <a
+                    href="/user/auth/request-otp"
+                    className="font-medium text-blue-600 hover:text-blue-500"
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+              </div>
+
+              <div>
+                <Button
+                  type="submit"
+                  size="3"
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Signing in..." : "Sign in"}
+                </Button>
+              </div>
+
+              <div className="text-center">
+                <Text size="2" color="gray">
+                  Don't have an account?{" "}
+                  <a
+                    href="/user/auth/signup"
+                    className="font-medium text-blue-600 hover:text-blue-500"
+                  >
+                    Sign up
+                  </a>
+                </Text>
+              </div>
+            </form>
+          </Card>
+        </Dialog.Content>
+      </Dialog.Root>
     </>
   );
 }

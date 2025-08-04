@@ -6,6 +6,7 @@ import { TextField, Flex, Button, Card, Text } from "@radix-ui/themes";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { ErrorLabel } from "@/components/shared/ErrorLabel";
 import Link from "next/link";
+import Image from "next/image";
 
 type FormData = {
   email: string;
@@ -49,15 +50,25 @@ export default function SignInPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Welcome Back
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to your DentalEase patient account
-          </p>
+          <div className="flex flex-col items-center mb-6">
+            <Image
+              src="/assets/brand-logo.png"
+              alt="DentalEase Logo"
+              width={80}
+              height={80}
+              className="mb-4"
+            />
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              DentalEase
+            </h1>
+            <p className="text-sm text-gray-600">Your Dental Care Partner</p>
+          </div>
         </div>
 
         <Card className="p-8">
+          <p className="mt-2 mb-8 text-sm text-center text-gray-600">
+            Sign in to your DentalEase patient account
+          </p>
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <Flex direction="column" gap="2">
