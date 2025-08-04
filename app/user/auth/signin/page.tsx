@@ -7,6 +7,7 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { ErrorLabel } from "@/components/shared/ErrorLabel";
 import Link from "next/link";
 import Image from "next/image";
+import authService from "@/services/auth.service";
 
 type FormData = {
   email: string;
@@ -34,7 +35,7 @@ export default function SignInPage() {
     setError(null);
 
     try {
-      console.log("Sign in attempt:", data);
+      await authService.signInAndRedirect(data);
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error
