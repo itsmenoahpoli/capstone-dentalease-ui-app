@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { getChatResponse } from "@/services/chatbot.service";
 
 interface Message {
   id: string;
@@ -37,16 +38,32 @@ export default function ChatbotButton() {
     setInputValue("");
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      const botResponse = await getChatResponse({
+        userMessage: inputValue,
+        contextData: [],
+      });
+
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Unable to process query",
+        text: botResponse,
         isUser: false,
         timestamp: new Date(),
       };
+
       setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "I'm having trouble processing your request. Please try again or contact our office directly.",
+        isUser: false,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -127,7 +144,7 @@ export default function ChatbotButton() {
                       : "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  <p className="text-sm">{message.text}</p>
+                  <p className="text-sm whitespace-pre-line">{message.text}</p>
                 </div>
                 {message.isUser && (
                   <div className="flex-shrink-0">
