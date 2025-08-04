@@ -99,10 +99,27 @@ export default function ChatbotButton() {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${
+                className={`flex items-center space-x-2 ${
                   message.isUser ? "justify-end" : "justify-start"
                 }`}
               >
+                {!message.isUser && (
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="w-4 h-4 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                )}
                 <div
                   className={`max-w-xs px-3 py-2 rounded-lg ${
                     message.isUser
@@ -112,6 +129,23 @@ export default function ChatbotButton() {
                 >
                   <p className="text-sm">{message.text}</p>
                 </div>
+                {message.isUser && (
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="w-4 h-4 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                )}
               </div>
             ))}
             {isLoading && (
