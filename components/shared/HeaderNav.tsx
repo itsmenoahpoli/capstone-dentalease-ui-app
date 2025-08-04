@@ -67,9 +67,7 @@ export default function HeaderNav() {
           <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
               <Link
-                href={
-                  user?.role === "admin" ? "/backoffice-dashboard/app" : "/user"
-                }
+                href="/user"
                 className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
               >
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">

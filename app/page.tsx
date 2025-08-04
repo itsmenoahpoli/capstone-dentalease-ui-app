@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { HeaderNav, FooterNav } from "@/components";
+import ChatbotWrapper from "@/components/shared/ChatbotWrapper";
 
 export const metadata = {
   title: "DentalEase | Home",
@@ -430,6 +431,7 @@ export default function Home() {
         </div>
       </section>
       <FooterNav />
+      <ChatbotWrapper />
     </>
   );
 }

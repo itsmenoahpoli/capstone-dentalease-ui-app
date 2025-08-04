@@ -68,3 +68,4 @@ export { PageHeader } from "./shared/dashboard/PageHeader";
 export { TablePagination } from "./shared/table/TablePagination";
 export { default as HeaderNav } from "./shared/HeaderNav";
 export { default as FooterNav } from "./shared/FooterNav";
+export { default as ChatbotButton } from "./shared/ChatbotWrapper";
