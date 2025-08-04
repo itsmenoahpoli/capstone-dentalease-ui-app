@@ -46,6 +46,21 @@ export default function HeaderNav() {
             </Link>
           </nav>
 
+          <div className="hidden md:flex items-center space-x-4">
+            <Link
+              href="/user/auth/signin"
+              className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+            >
+              Login
+            </Link>
+            <Link
+              href="/user/auth/signup"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+            >
+              Create Account
+            </Link>
+          </div>
+
           <div className="md:hidden">
             <button className="text-gray-700 hover:text-blue-600">
               <svg
